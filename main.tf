@@ -4,10 +4,18 @@ provider "aws" {
   version = "=1.55.0"
 }
 
+
+data "terraform_remote_state" "vpc" {
+  backend = "atlas"
+  config {
+    name = "${var.tfe_org}/${var.vpc_workspace}"
+  }
+}
+
 resource "aws_security_group" "allow_all" {
   name        = "allow_all"
   description = "Allow all inbound traffic"
-
+  vpc_id  = "${data.terraform_remote_state.vpc.vpc_id}"
   ingress {
     from_port   = 0
     to_port     = 0
